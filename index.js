@@ -32,6 +32,9 @@ app.get("/", (req, res) => {
 app.get("/users", (req, res) => {
   res.status(200).send(users);
 });
+app.get("/users/:id", (req, res) => {
+  res.status(200).send(users[0]);
+});
 
 app.post ('/users', (req, res)=>{
     users.push({id:users.length + 1, ...req.body})
