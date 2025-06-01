@@ -33,27 +33,44 @@ app.get("/users", (req, res) => {
   res.status(200).send(users);
 });
 app.get("/users/:id", (req, res) => {
-  res.status(200).send(users[0]);
+  const user = users.find(u => u.id === Number(req.params.id));
+  if (!user) {
+    return res.status(404).json({ message: "User Not Found"})
+  }
+  res.status(200).json(user);
 });
 
 app.post ('/users', (req, res)=>{
-    users.push({id:users.length + 1, ...req.body})
-    res.status(201).send({status: 201, message: 'User added Successfully'})
+  const newUser = {
+    id:users.length + 1, ...req.body
+
+  }
+  users.push(newUser);  
+  res.status(201).json({ message: 'User added Successfully', user: newUser})
 })
 
 app.delete('/users/:id', (req, res)=>{
-const { id } = req.params
-const index = users.findIndex(user => user.id === parseInt(id))
-users.splice(index, 1)
-res.send({message: 'User Delete Successfully'})
-})
+// const { id } = req.params
+const index = users.findIndex(user => user.id === Number(req.params.id));
+if (index === -1) {
+  return res.status(404).json({ message: "user not found"})
+  
+}
+const deletedUser = users.splice(index, 1)
+res.json({message: 'User Delete Successfully', user: deletedUser[0]});
+});
 
 
 app.put('/users/:id', (req, res)=>{
 // const { id } = req.params
 const index = users.findIndex(user => user.id === Number(req.params.id))
-users.splice(index, 1, {id: Number(req.params.id),...req.body})
-res.send({message: 'User Update Successfully'})
+if (index === -1) {
+  return res.status(404).json({ message: "user not found"});
+}
+const updatedUser =  {id: Number(req.params.id),...req.body}
+users[index] = updatedUser;
+
+res.json({message: 'User Updated Successfully', user: updatedUser});
 })
 
 app.listen(PORT, () => {
